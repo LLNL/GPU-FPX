@@ -1,0 +1,85 @@
+.PHONY: setup GPU-FPX instr_count instr_count_fp detect_fp_exceptions_ori GPU-FPX-no-check cuda-samples_all cuda-samples_small
+
+setup: nvbit_release/tools/GPU-FPX nvbit_release/tools/GPU-FPX-ana #nvbit_release/tools/instr_count_fp nvbit_release/tools/instr_count nvbit_release/tools/GPU-FPX-no-check nvbit_release/tools/detect_fp_exceptions_ori
+	        $(MAKE) GPU-FPX; \
+	        $(MAKE) GPU-FPX-ana; \
+            #	$(MAKE) instr_count_fp; \
+            #	$(MAKE) GPU-FPX-no-check; \
+            #	$(MAKE) detect_fp_exceptions_ori; \
+	    #	$(MAKE) instr_count
+
+GPU-FPX: nvbit_release/tools/GPU-FPX
+	        cd nvbit_release/tools/GPU-FPX; \
+	        $(MAKE)
+
+nvbit_release/tools/GPU-FPX: nvbit_release/tools/ GPU-FPX/
+	        cp -r GPU-FPX/ nvbit_release/tools/
+
+GPU-FPX-ana: nvbit_release/tools/GPU-FPX-ana
+	        cd nvbit_release/tools/GPU-FPX-ana; \
+	        $(MAKE)
+
+nvbit_release/tools/GPU-FPX-ana: nvbit_release/tools/ GPU-FPX-ana/
+	        cp -r GPU-FPX-ana/ nvbit_release/tools/
+
+GPU-FPX-no-check: nvbit_release/tools/GPU-FPX-no-check
+	        cd nvbit_release/tools/GPU-FPX-no-check; \
+	        $(MAKE)
+
+nvbit_release/tools/GPU-FPX-no-check: nvbit_release/tools/ GPU-FPX-no-check/
+	        cp -r GPU-FPX-no-check/ nvbit_release/tools/
+
+detect_fp_exceptions_ori: nvbit_release/tools/detect_fp_exceptions_ori
+	        cd nvbit_release/tools/detect_fp_exceptions_ori; \
+	        $(MAKE)
+
+nvbit_release/tools/detect_fp_exceptions_ori: nvbit_release/tools/ detect_fp_exceptions_ori/
+	        cp -r detect_fp_exceptions_ori/ nvbit_release/tools/
+
+
+
+instr_count_fp: nvbit_release/tools/instr_count_fp
+	        cd nvbit_release/tools/instr_count_fp; \
+		$(MAKE)
+
+nvbit_release/tools/instr_count_fp: nvbit_release/tools/ instr_count_fp/
+	        cp -r instr_count_fp/ nvbit_release/tools/
+
+instr_count: nvbit_release/tools/instr_count
+		cd nvbit_release/tools/instr_count; \
+                $(MAKE)
+
+nvbit_release/tools/instr_count: nvbit_release/tools/ instr_count/
+	cp -r instr_count/ nvbit_release/tools/
+
+nvbit-Linux-x86_64-1.5.5.tar.bz2:
+	        wget https://github.com/NVlabs/NVBit/releases/download/1.5.5/nvbit-Linux-x86_64-1.5.5.tar.bz2
+nvbit_release/tools/: nvbit-Linux-x86_64-1.5.5.tar.bz2
+	        tar -xf nvbit-Linux-x86_64-1.5.5.tar.bz2
+
+clean:
+		cd GPU-FPX; \
+		make clean
+		cd nvbit_release/tools/GPU-FPX; \
+		make clean
+		cd nvbit_release/tools/GPU-FPX-no-check; \
+		make clean
+		cd nvbit_release/tools/detect_fp_exceptions_ori; \
+		make clean
+		cd instr_count; \
+		make clean
+		cd nvbit_release/tools/instr_count; \
+		make clean
+		cd instr_count_fp; \
+		make clean
+		cd nvbit_release/tools/instr_count_fp; \
+		make clean
+#	        rm -rf nvbit_release/
+#	        rm nvbit-Linux-x86_64-1.5.5.tar.bz2
+cuda-samples_all:
+	cd cuda-samples/Samples; \
+	bash comp_run_all.sh
+
+cuda-samples_small:
+	cd cuda-samples/Samples; \
+	bash comp_run_small.sh

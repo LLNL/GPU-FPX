@@ -1,0 +1,24 @@
+FROM nvidia/cuda:11.7.0-devel-ubuntu20.04
+WORKDIR /cuda-examples
+ENV TZ=Europe/Kiev
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys A4B469963BF863CC \
+  && apt-get update \
+  && apt-get install -y less bsdmainutils vim python3-pip bc wget gcc time timelimit ssh
+RUN python3 -m pip install pandas
+RUN wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.2.tar.gz \
+    && gunzip -c openmpi-4.1.2.tar.gz | tar xf - \
+    && cd openmpi-4.1.2/ \
+    && ./configure --prefix=/usr/local \
+    && make install -j4 \
+    && ldconfig
+#RUN apt-get install -y  less bsdmainutils
+VOLUME ./cuda-samples/ 
+#/cuda-samples/nvbit-exceptions/tools/GPU-FPX/ /cuda-samples/nvbit-exceptions/tools/instr_count/ /cuda-samples/nvbit-exceptions/tools/instr_count_fp/ /cuda-samples/tools/detect_fp_exceptions_ori/
+# COPY ./GPU-FPX ./GPU-FPX
+# COPY ./instr_count_fp ./instr_count_fp
+# COPY ./instr_count ./instr_count
+# COPY ./cuda-samples ./cuda-samples
+# COPY ./detect_fp_exceptions_ori ./detect_fp_exceptions_ori
+# COPY ./Makefile ./Makefile
+# RUN make

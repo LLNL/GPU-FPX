@@ -1,0 +1,803 @@
+diff -ruN polybenchGpu/CUDA/2DCONV/2DConvolution.cu polybenchGpu_new/CUDA/2DCONV/2DConvolution.cu
+--- polybenchGpu/CUDA/2DCONV/2DConvolution.cu	2023-06-05 19:19:22.491845694 -0600
++++ polybenchGpu_new/CUDA/2DCONV/2DConvolution.cu	2023-06-05 18:01:03.073055363 -0600
+@@ -28,7 +28,7 @@
+ 
+ #define GPU_DEVICE 0
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void conv2D(int ni, int nj, DATA_TYPE POLYBENCH_2D(A, NI, NJ, ni, nj), DATA_TYPE POLYBENCH_2D(B, NI, NJ, ni, nj))
+@@ -200,7 +200,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(ni, nj, POLYBENCH_ARRAY(B_outputFromGpu));
++	//print_array(ni, nj, POLYBENCH_ARRAY(B_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/2MM/2mm.cu polybenchGpu_new/CUDA/2MM/2mm.cu
+--- polybenchGpu/CUDA/2MM/2mm.cu	2023-06-05 19:19:22.491845694 -0600
++++ polybenchGpu_new/CUDA/2MM/2mm.cu	2023-06-05 18:01:03.081055212 -0600
+@@ -27,7 +27,7 @@
+ 
+ #define GPU_DEVICE 0
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_array(int ni, int nj, int nk, int nl, DATA_TYPE *alpha, DATA_TYPE *beta, DATA_TYPE POLYBENCH_2D(A, NI, NK, ni, nk), 
+@@ -280,7 +280,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(ni, nl, POLYBENCH_ARRAY(D_outputFromGpu));
++		//print_array(ni, nl, POLYBENCH_ARRAY(D_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/3DCONV/3DConvolution.cu polybenchGpu_new/CUDA/3DCONV/3DConvolution.cu
+--- polybenchGpu/CUDA/3DCONV/3DConvolution.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/3DCONV/3DConvolution.cu	2023-06-05 18:01:03.089055061 -0600
+@@ -28,7 +28,7 @@
+ 
+ #define GPU_DEVICE 0
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void conv3D(int ni, int nj, int nk, DATA_TYPE POLYBENCH_3D(A, NI, NJ, NK, ni, nj, nk), DATA_TYPE POLYBENCH_3D(B, NI, NJ, NK, ni, nj, nk))
+@@ -221,7 +221,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(ni, nj, nk, POLYBENCH_ARRAY(B_outputFromGpu));
++		//print_array(ni, nj, nk, POLYBENCH_ARRAY(B_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/3MM/3mm.cu polybenchGpu_new/CUDA/3MM/3mm.cu
+--- polybenchGpu/CUDA/3MM/3mm.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/3MM/3mm.cu	2023-06-05 18:01:03.097054909 -0600
+@@ -27,7 +27,7 @@
+ //define the error threshold for the results "not matching"
+ #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_array(int ni, int nj, int nk, int nl, int nm, DATA_TYPE POLYBENCH_2D(A, NI, NK, ni, nk), DATA_TYPE POLYBENCH_2D(B, NK, NJ, nk, nj), 
+@@ -327,7 +327,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(ni, nl, POLYBENCH_ARRAY(G_outputFromGpu));
++		//print_array(ni, nl, POLYBENCH_ARRAY(G_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/ADI/adi.cu polybenchGpu_new/CUDA/ADI/adi.cu
+--- polybenchGpu/CUDA/ADI/adi.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/ADI/adi.cu	2023-06-05 18:01:03.109054682 -0600
+@@ -27,7 +27,7 @@
+ 
+ #define GPU_DEVICE 0
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void adi(int tsteps, int n, DATA_TYPE POLYBENCH_2D(A,N,N,n,n), DATA_TYPE POLYBENCH_2D(B,N,N,n,n), DATA_TYPE POLYBENCH_2D(X,N,N,n,n))
+@@ -328,7 +328,7 @@
+ 
+ 	#else
+ 
+-		print_array(n, POLYBENCH_ARRAY(X_outputFromGpu));
++		//print_array(n, POLYBENCH_ARRAY(X_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/ATAX/atax.cu polybenchGpu_new/CUDA/ATAX/atax.cu
+--- polybenchGpu/CUDA/ATAX/atax.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/ATAX/atax.cu	2023-06-05 18:01:03.117054531 -0600
+@@ -32,7 +32,7 @@
+ #define M_PI 3.14159
+ #endif
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_array(int nx, int ny, DATA_TYPE POLYBENCH_1D(x,NX,nx), DATA_TYPE POLYBENCH_2D(A,NX,NY,nx,ny))
+@@ -227,7 +227,7 @@
+ 
+ 	#else
+ 
+-		print_array(ny, POLYBENCH_ARRAY(y_outputFromGpu));
++		//print_array(ny, POLYBENCH_ARRAY(y_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/BICG/bicg.cu polybenchGpu_new/CUDA/BICG/bicg.cu
+--- polybenchGpu/CUDA/BICG/bicg.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/BICG/bicg.cu	2023-06-05 18:01:03.125054378 -0600
+@@ -30,7 +30,7 @@
+ #define M_PI 3.14159
+ #endif
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_array(int nx, int ny, DATA_TYPE POLYBENCH_2D(A,NX,NY,nx,ny), DATA_TYPE POLYBENCH_1D(p,NY,ny), DATA_TYPE POLYBENCH_1D(r,NX,nx))
+@@ -257,7 +257,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(nx, ny, POLYBENCH_ARRAY(s_outputFromGpu), POLYBENCH_ARRAY(q_outputFromGpu));
++		//print_array(nx, ny, POLYBENCH_ARRAY(s_outputFromGpu), POLYBENCH_ARRAY(q_outputFromGpu));
+ 	
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/clean_all.sh polybenchGpu_new/CUDA/clean_all.sh
+--- polybenchGpu/CUDA/clean_all.sh	1969-12-31 17:00:00.000000000 -0700
++++ polybenchGpu_new/CUDA/clean_all.sh	2023-06-05 18:53:07.941840463 -0600
+@@ -0,0 +1,14 @@
++#EXEs=$(find Samples/ -type f -executable) # find all executable paths
++MAKEFILES=$(find ./ -name "Makefile") # find all executable paths
++for mkfile in ${MAKEFILES}
++do
++        mk=${mkfile##*/} # get the name of executable [[Bash -- get the last substring for a separator]]
++        size=${#mk} #[[Bash -- get the length of a string]]
++        dir=${mkfile::(-$size+0)} #[[Bash -- get the specific substring]]
++        cd $dir;
++        echo "in ${dir}....." 
++        #(time eval ${PRELOAD_FLAG} "./${run}") >stdout.txt 2>stderr.txt
++        rm -rf *.txt* *.sh* makelog
++        make clean 
++	cd -;
++done
+diff -ruN polybenchGpu/CUDA/common.mk polybenchGpu_new/CUDA/common.mk
+--- polybenchGpu/CUDA/common.mk	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/common.mk	2023-06-05 18:01:03.165053617 -0600
+@@ -1,4 +1,6 @@
+ all:
+-	nvcc -O3 ${CUFILES} -o ${EXECUTABLE} 
++	#nvcc -O3 -U RUN_ON_CPU --generate-line-info ${CUFILES} -o ${EXECUTABLE} 
++	nvcc -O3 -arch sm_75 -U RUN_ON_CPU --generate-line-info ${CUFILES} -o ${EXECUTABLE} 
++	#nvcc -O3 -use_fast_math -arch sm_70 -U RUN_ON_CPU --generate-line-info ${CUFILES} -o ${EXECUTABLE} 
+ clean:
+-	rm -f *~ *.exe
+\ No newline at end of file
++	rm -f *~ *.exe
+diff -ruN polybenchGpu/CUDA/comp_run_all.sh polybenchGpu_new/CUDA/comp_run_all.sh
+--- polybenchGpu/CUDA/comp_run_all.sh	1969-12-31 17:00:00.000000000 -0700
++++ polybenchGpu_new/CUDA/comp_run_all.sh	2023-06-05 18:59:18.970758235 -0600
+@@ -0,0 +1,36 @@
++#EXEs=$(find Samples/ -type f -executable) # find all executable paths
++#export GPUFPX_OBJ=/fpxbench/nvbit_release/tools/GPU-FPX/GPU-FPX.so
++#export GPUFPX_PRELOAD_FLAG="LD_PRELOAD=${GPUFPX_OBJ}"
++
++source ../../share.sh
++MAKEFILES=$(find ./ -name "Makefile") # find all executable paths
++for mkfile in ${MAKEFILES}
++do
++        mk=${mkfile##*/} # get the name of executable [[Bash -- get the last substring for a separator]]
++        size=${#mk} #[[Bash -- get the length of a string]]
++        dir=${mkfile::(-$size+0)} #[[Bash -- get the specific substring]]
++        cd $dir;
++        echo "in ${dir}....." 
++        #(time eval ${PRELOAD_FLAG} "./${run}") >stdout.txt 2>stderr.txt
++	if $ENABLE_COMPILE
++	then
++		make clean
++		make&>makelog
++	fi	
++	run=$(find ./ -type f -executable)
++	if $ENABLE_PLAIN;
++	then
++        	comm_plain="eval ./${run}"
++        	echo ${comm_plain} > run_plain.sh
++        	echo "run plain program"
++        	(time timeout -k 1s 2000s bash run_plain.sh) >stdout.plain.txt 2>stderr.plain.txt
++	fi
++	if $ENABLE_GPUFPX;
++	then
++        	comm_gpufpx="eval ${GPUFPX_PRELOAD_FLAG} ./${run}"
++        	echo ${comm_gpufpx} > run_gpufpx.sh
++        	echo "run gpu-fpx on program"
++        	(time timeout -k 1s 2000s bash run_gpufpx.sh) > ${gpufpx_output_filename} 2>${gpufpx_err_filename}
++	fi
++	cd -;
++done
+diff -ruN polybenchGpu/CUDA/comp_run_except.sh polybenchGpu_new/CUDA/comp_run_except.sh
+--- polybenchGpu/CUDA/comp_run_except.sh	1969-12-31 17:00:00.000000000 -0700
++++ polybenchGpu_new/CUDA/comp_run_except.sh	2023-06-05 18:55:00.483697621 -0600
+@@ -0,0 +1,37 @@
++#EXEs=$(find Samples/ -type f -executable) # find all executable paths
++#export GPUFPX_OBJ=/fpxbench/nvbit_release/tools/GPU-FPX/GPU-FPX.so
++#export GPUFPX_PRELOAD_FLAG="LD_PRELOAD=${GPUFPX_OBJ}"
++
++source ../../share.sh
++#MAKEFILES=$(find ./ -name "Makefile") # find all executable paths
++MAKEFILES='./GESUMMV/Makefile ./GRAMSCHM/Makefile ./LU/Makefile' # find all executable paths
++for mkfile in ${MAKEFILES}
++do
++        mk=${mkfile##*/} # get the name of executable [[Bash -- get the last substring for a separator]]
++        size=${#mk} #[[Bash -- get the length of a string]]
++        dir=${mkfile::(-$size+0)} #[[Bash -- get the specific substring]]
++        cd $dir;
++        echo "in ${dir}....." 
++        #(time eval ${PRELOAD_FLAG} "./${run}") >stdout.txt 2>stderr.txt
++	if $ENABLE_COMPILE
++	then
++		make clean
++		make&>makelog
++	fi	
++	run=$(find ./ -type f -executable)
++	if $ENABLE_PLAIN;
++	then
++        	comm_plain="eval ./${run}"
++        	echo ${comm_plain} > run_plain.sh
++        	echo "run plain program"
++        	(time timeout -k 1s 2000s bash run_plain.sh) >stdout.plain.txt 2>stderr.plain.txt
++	fi
++	if $ENABLE_GPUFPX;
++	then
++        	comm_gpufpx="eval ${GPUFPX_PRELOAD_FLAG} ./${run}"
++        	echo ${comm_gpufpx} > run_gpufpx.sh
++        	echo "run gpu-fpx on program"
++		(time timeout -k 1s 2000s bash run_gpufpx.sh) >${gpufpx_output_filename} 2>${gpufpx_err_filename}
++	fi
++	cd -;
++done
+diff -ruN polybenchGpu/CUDA/CORR/correlation.cu polybenchGpu_new/CUDA/CORR/correlation.cu
+--- polybenchGpu/CUDA/CORR/correlation.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/CORR/correlation.cu	2023-06-05 18:01:03.133054226 -0600
+@@ -31,7 +31,7 @@
+ #define FLOAT_N 3214212.01f
+ #define EPS 0.005f
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_arrays(int m, int n, DATA_TYPE POLYBENCH_2D(data, M, N, m, n))
+@@ -332,7 +332,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(m, POLYBENCH_ARRAY(symmat_outputFromGpu));
++		//print_array(m, POLYBENCH_ARRAY(symmat_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/COVAR/covariance.cu polybenchGpu_new/CUDA/COVAR/covariance.cu
+--- polybenchGpu/CUDA/COVAR/covariance.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/COVAR/covariance.cu	2023-06-05 18:01:03.137054152 -0600
+@@ -32,7 +32,7 @@
+ #define FLOAT_N 3214212.01
+ #define EPS 0.005
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_arrays(int m, int n, DATA_TYPE POLYBENCH_2D(data,M,N,m,n))
+@@ -264,7 +264,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(m, POLYBENCH_ARRAY(symmat_outputFromGpu));
++		//print_array(m, POLYBENCH_ARRAY(symmat_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/DOITGEN/doitgen.cu polybenchGpu_new/CUDA/DOITGEN/doitgen.cu
+--- polybenchGpu/CUDA/DOITGEN/doitgen.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/DOITGEN/doitgen.cu	1969-12-31 17:00:00.000000000 -0700
+@@ -1,226 +0,0 @@
+-/*********************************************************************************/
+-//
+-// Polybench kernels implementation on CUDA GPU
+-//
+-// Computer & Information Science, University of Delaware
+-// Author(s):   Sudhee Ayalasomayajula (sudhee1@gmail.com)
+-//              John Cavazos (cavazos@cis.udel.edu)
+-//		Scott Grauer Gray(sgrauerg@gmail.com)
+-//              Robert Searles (rsearles35@aol.com)   
+-//              Lifan Xu (xulifan@udel.edu)
+-//
+-// Contact(s): Lifan Xu (xulifan@udel.edu)
+-// Reference(s):
+-//
+-/*********************************************************************************/
+-
+-
+-#include <unistd.h>
+-#include <stdio.h>
+-#include <time.h>
+-#include <sys/time.h>
+-#include <stdlib.h>
+-#include <stdarg.h>
+-#include <string.h>
+-#include <cuda.h>
+-
+-#include "../../common/polybenchUtilFuncts.h"
+-
+-//define the error threshold for the results "not matching"
+-#define PERCENT_DIFF_ERROR_THRESHOLD 0.05
+-
+-/* Problem size. */
+-#define NR 128
+-#define NQ 128
+-#define NP 128
+-
+-/* Thread block dimensions */
+-#define DIM_THREAD_BLOCK_X 32
+-#define DIM_THREAD_BLOCK_Y 8
+-
+-#define GPU_DEVICE 0
+-
+-/* Can switch DATA_TYPE between float and double */
+-typedef float DATA_TYPE;
+-
+-
+-
+-void doitgenCPU(DATA_TYPE *sum, DATA_TYPE *A, DATA_TYPE *C4)
+-{
+-	for (int r = 0; r < NR; r++)
+-	{
+-		for (int q = 0; q < NQ; q++)  
+-		{
+-			for (int p = 0; p < NP; p++)  
+-			{
+-				sum[r * (NQ * NP) + q * NP + p] = (DATA_TYPE)0.0;
+-				for (int s = 0; s < NP; s++)
+-				{
+-					sum[r * (NQ * NP) + q * NP + p] = sum[r * (NQ * NP) + q * NP + p] + A[r * (NQ * NP) + q * NP + s] * C4[s * NP + p];
+-				}
+-      		}
+-      		
+-			for (int p = 0; p < NP; p++)
+-       		{
+-				A[r * (NQ * NP) + q * NP + p] = sum[r * (NQ * NP) + q * NP + p];
+-			}
+-		}
+-	}
+-}
+-
+-
+-void init_array(DATA_TYPE *A, DATA_TYPE *C4)
+-{
+-  	for (int i = 0; i < NR; i++)
+-  	{
+-    		for (int j = 0; j < NQ; j++)
+-    		{
+-      			for (int k = 0; k < NP; k++)
+-      			{
+-	 			A[i * (NQ * NP) + j * NP + k] = ((DATA_TYPE) i*j + k) / NP;
+-      			}
+-    		}
+-  	}
+-
+-  	for (int i = 0; i < NP; i++)
+-  	{
+-    		for (int j = 0; j < NP; j++)
+-    		{
+-      			C4[i * NP + j] = ((DATA_TYPE) i*j) / NP;
+-    		}
+-  	}
+-}
+-
+-
+-void compareResults(DATA_TYPE* sum, DATA_TYPE* sum_outputFromGpu)
+-{
+-	int fail = 0;
+-	
+-	for (int r = 0; r < NR; r++)
+-	{
+-    		for (int q = 0; q < NQ; q++)  
+-		{
+-      			for (int p = 0; p < NP; p++)  
+-			{
+-				if (percentDiff(sum[r * (NQ * NP) + q * NP + p], sum_outputFromGpu[r * (NQ * NP) + q * NP + p]) > PERCENT_DIFF_ERROR_THRESHOLD)
+-				{
+-					fail++;
+-				}
+-			}
+-		}
+-	}
+-	
+-	// Print results
+-	printf("Number of misses: %d\n", fail);
+-}
+-
+-
+-void GPU_argv_init()
+-{
+-	cudaDeviceProp deviceProp;
+-	cudaGetDeviceProperties(&deviceProp, GPU_DEVICE);
+-	printf("setting device %d with name %s\n",GPU_DEVICE,deviceProp.name);
+-	cudaSetDevice( GPU_DEVICE );
+-}
+-
+-
+-__global__ void doitgen_kernel1(DATA_TYPE *sum, DATA_TYPE *A, DATA_TYPE *C4, int r)
+-{
+-	int p = blockIdx.x * blockDim.x + threadIdx.x;
+-	int q = blockIdx.y * blockDim.y + threadIdx.y;
+-
+-	if ((p < NP) && (q < NQ))
+-	{
+-
+-		sum[r * (NQ * NP) + q * NP + p] = (DATA_TYPE)0.0;
+-	
+-		for (int s = 0; s < NP; s++)
+-		{
+-			sum[r * (NQ * NP) + q * NP + p] = sum[r * (NQ * NP) + q * NP + p] + A[r * (NQ * NP) + q * NP + s] * C4[s * NP + p];
+-		}
+-	}
+-}
+-
+-__global__ void doitgen_kernel2(DATA_TYPE *sum, DATA_TYPE *A, DATA_TYPE *C4, int r)
+-{
+-	int p = blockIdx.x * blockDim.x + threadIdx.x;
+-	int q = blockIdx.y * blockDim.y + threadIdx.y;
+-
+-	if ((p < NP) && (q < NQ))
+-	{
+-		A[r * (NQ * NP) + q * NP + p] = sum[r * (NQ * NP) + q * NP + p];
+-	}
+-}
+-
+-void doitgenCuda(DATA_TYPE* A, DATA_TYPE* C4, DATA_TYPE* sum, DATA_TYPE* sum_outputFromGpu)
+-{
+-	double t_start, t_end;
+-
+-	DATA_TYPE* AGpu;
+-	DATA_TYPE* C4Gpu;
+-	DATA_TYPE* sumGpu;
+-
+-	cudaMalloc(&AGpu, NR * NQ * NP * sizeof(DATA_TYPE));
+-	cudaMalloc(&C4Gpu, NP * NP * sizeof(DATA_TYPE));
+-	cudaMalloc(&sumGpu, NR * NQ * NP * sizeof(DATA_TYPE));
+-
+-	cudaMemcpy(AGpu, A, NR * NQ * NP * sizeof(DATA_TYPE), cudaMemcpyHostToDevice);
+-	cudaMemcpy(C4Gpu, C4, NP * NP * sizeof(DATA_TYPE), cudaMemcpyHostToDevice);
+-	cudaMemcpy(sumGpu, sum, NR * NQ * NP * sizeof(DATA_TYPE), cudaMemcpyHostToDevice);
+-
+-	dim3 block(DIM_THREAD_BLOCK_X, DIM_THREAD_BLOCK_Y);
+-	dim3 grid((unsigned int)ceil( ((float)NP) / ((float)block.x) ), (unsigned int)ceil( ((float)NR) / ((float)block.y) ));
+-	t_start = rtclock();
+-	
+-	for (int r = 0; r < NR; r++)
+-	{
+-		doitgen_kernel1 <<<grid, block>>> (sumGpu, AGpu, C4Gpu, r);
+-		cudaThreadSynchronize();
+-		doitgen_kernel2 <<<grid, block>>> (sumGpu, AGpu, C4Gpu, r);
+-		cudaThreadSynchronize();
+-	}
+-
+-	t_end = rtclock();
+-	fprintf(stdout, "GPU Runtime: %0.6lfs\n", t_end - t_start);
+-	
+-	cudaMemcpy(sum_outputFromGpu, sumGpu, NR * NQ * NP * sizeof(DATA_TYPE), cudaMemcpyDeviceToHost);
+-
+-	cudaFree(AGpu);
+-	cudaFree(C4Gpu);
+-	cudaFree(sumGpu);
+-}
+-	
+-
+-int main(int argc, char *argv[])
+-{
+-	double t_start, t_end;
+-
+-	DATA_TYPE* A;
+-	DATA_TYPE* C4;
+-	DATA_TYPE* sum, *sum_outputFromGpu;
+-
+-	A = (DATA_TYPE*)malloc(NR * NQ * NP * sizeof(DATA_TYPE));
+-	C4 = (DATA_TYPE*)malloc(NP * NP * sizeof(DATA_TYPE));
+-	sum = (DATA_TYPE*)malloc(NR * NQ * NP * sizeof(DATA_TYPE));
+-	sum_outputFromGpu = (DATA_TYPE*)malloc(NR * NQ * NP * sizeof(DATA_TYPE));
+-
+-	init_array(A, C4);
+-
+-	doitgenCuda(A, C4, sum, sum_outputFromGpu);
+-
+-	t_start = rtclock();
+-	doitgenCPU(sum, A, C4);
+-	t_end = rtclock();
+-
+-	fprintf(stdout, "CPU Runtime: %0.6lfs\n", t_end - t_start);
+-	
+-	compareResults(sum, sum_outputFromGpu);
+-
+-	free(A);
+-	free(C4);
+-	free(sum);
+-	free(sum_outputFromGpu);
+-	
+-    return 0;
+-}
+-
+diff -ruN polybenchGpu/CUDA/DOITGEN/Makefile polybenchGpu_new/CUDA/DOITGEN/Makefile
+--- polybenchGpu/CUDA/DOITGEN/Makefile	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/DOITGEN/Makefile	1969-12-31 17:00:00.000000000 -0700
+@@ -1,2 +0,0 @@
+-all:
+-	nvcc -O3 doitgen.cu -o doitgen.exe
+diff -ruN polybenchGpu/CUDA/FDTD-2D/fdtd2d.cu polybenchGpu_new/CUDA/FDTD-2D/fdtd2d.cu
+--- polybenchGpu/CUDA/FDTD-2D/fdtd2d.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/FDTD-2D/fdtd2d.cu	2023-06-05 18:01:03.141054073 -0600
+@@ -27,7 +27,7 @@
+ 
+ #define GPU_DEVICE 0
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_arrays(int tmax, int nx, int ny, DATA_TYPE POLYBENCH_1D(_fict_, TMAX, TMAX), DATA_TYPE POLYBENCH_2D(ex,NX,NY,nx,ny), 
+@@ -265,7 +265,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(nx, ny, POLYBENCH_ARRAY(hz_outputFromGpu));
++		//print_array(nx, ny, POLYBENCH_ARRAY(hz_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/GEMM/gemm.cu polybenchGpu_new/CUDA/GEMM/gemm.cu
+--- polybenchGpu/CUDA/GEMM/gemm.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/GEMM/gemm.cu	2023-06-05 18:01:03.141054073 -0600
+@@ -32,7 +32,7 @@
+ #define ALPHA 32412.0f
+ #define BETA 2123.0f
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void gemm(int ni, int nj, int nk, DATA_TYPE alpha, DATA_TYPE beta, DATA_TYPE POLYBENCH_2D(A,NI,NK,ni,nk), 
+@@ -229,7 +229,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(ni, nj, POLYBENCH_ARRAY(C_outputFromGpu));
++		//print_array(ni, nj, POLYBENCH_ARRAY(C_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/GEMVER/gemver.cu polybenchGpu_new/CUDA/GEMVER/gemver.cu
+--- polybenchGpu/CUDA/GEMVER/gemver.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/GEMVER/gemver.cu	2023-06-05 18:01:03.145053998 -0600
+@@ -29,7 +29,7 @@
+ #define GPU_DEVICE 0
+ 
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void gemver(int n, DATA_TYPE alpha, DATA_TYPE beta, DATA_TYPE POLYBENCH_2D(A, N, N, n, n), DATA_TYPE POLYBENCH_1D(u1, N, n), DATA_TYPE POLYBENCH_1D(v1, N, n), 
+@@ -325,7 +325,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(n, POLYBENCH_ARRAY(w_outputFromGpu));
++		//print_array(n, POLYBENCH_ARRAY(w_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/GESUMMV/gesummv.cu polybenchGpu_new/CUDA/GESUMMV/gesummv.cu
+--- polybenchGpu/CUDA/GESUMMV/gesummv.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/GESUMMV/gesummv.cu	2023-06-05 18:01:03.149053922 -0600
+@@ -32,7 +32,7 @@
+ #define ALPHA 43532.0f
+ #define BETA 12313.0f
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void gesummv(int n, DATA_TYPE alpha, DATA_TYPE beta, DATA_TYPE POLYBENCH_2D(A,N,N,n,n), DATA_TYPE POLYBENCH_2D(B,N,N,n,n), DATA_TYPE POLYBENCH_1D(tmp,N,n),
+@@ -116,6 +116,9 @@
+ 			y[i] += B[i * N + j] * x[j];
+ 		}
+ 		y[i] = alpha * tmp[i] + beta  * y[i];
++		if(isinf(y[i])||isinf(alpha)||isinf(tmp[i])||isinf(beta)) {
++			printf("y[%d]=%f,alpha=%f,tmp[i]=%f,beta=%f.\n",i,y[i],alpha,tmp[i],beta);
++		}
+ 	}
+ }
+ 
+@@ -213,7 +216,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(n, POLYBENCH_ARRAY(y_outputFromGpu));
++//		print_array(n, POLYBENCH_ARRAY(y_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+Binary files polybenchGpu/CUDA/GRAMSCHM/.cuda-11.txt.swp and polybenchGpu_new/CUDA/GRAMSCHM/.cuda-11.txt.swp differ
+diff -ruN polybenchGpu/CUDA/GRAMSCHM/gramschmidt.cu polybenchGpu_new/CUDA/GRAMSCHM/gramschmidt.cu
+--- polybenchGpu/CUDA/GRAMSCHM/gramschmidt.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/GRAMSCHM/gramschmidt.cu	2023-06-05 18:01:03.149053922 -0600
+@@ -28,7 +28,7 @@
+ 
+ #define GPU_DEVICE 0
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void gramschmidt(int ni, int nj, DATA_TYPE POLYBENCH_2D(A,NI,NJ,ni,nj), DATA_TYPE POLYBENCH_2D(R,NJ,NJ,nj,nj), DATA_TYPE POLYBENCH_2D(Q,NI,NJ,ni,nj))
+@@ -260,7 +260,7 @@
+ 	
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(ni, nj, POLYBENCH_ARRAY(A_outputFromGpu));
++		//print_array(ni, nj, POLYBENCH_ARRAY(A_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+@@ -274,4 +274,3 @@
+ 
+ #include "../../common/polybench.c"
+ 
+-
+diff -ruN polybenchGpu/CUDA/GRAMSCHM/gramschmidt.cuh polybenchGpu_new/CUDA/GRAMSCHM/gramschmidt.cuh
+--- polybenchGpu/CUDA/GRAMSCHM/gramschmidt.cuh	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/GRAMSCHM/gramschmidt.cuh	2023-06-05 18:01:03.149053922 -0600
+@@ -49,7 +49,7 @@
+ # define _PB_NJ POLYBENCH_LOOP_BOUND(NJ,nj)
+ 
+ # ifndef DATA_TYPE
+-#  define DATA_TYPE float
++#  define DATA_TYPE float 
+ #  define DATA_PRINTF_MODIFIER "%0.2lf "
+ # endif
+ 
+@@ -57,4 +57,4 @@
+ #define DIM_THREAD_BLOCK_X 256
+ #define DIM_THREAD_BLOCK_Y 1
+ 
+-#endif /* !GRAMSCHMIDT*/
+\ No newline at end of file
++#endif /* !GRAMSCHMIDT*/
+diff -ruN polybenchGpu/CUDA/JACOBI1D/jacobi1D.cu polybenchGpu_new/CUDA/JACOBI1D/jacobi1D.cu
+--- polybenchGpu/CUDA/JACOBI1D/jacobi1D.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/JACOBI1D/jacobi1D.cu	2023-06-05 18:01:03.153053846 -0600
+@@ -26,7 +26,7 @@
+ //define the error threshold for the results "not matching"
+ #define PERCENT_DIFF_ERROR_THRESHOLD 0.05
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_array(int n, DATA_TYPE POLYBENCH_1D(A,N,n), DATA_TYPE POLYBENCH_1D(B,N,n))
+@@ -196,7 +196,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(n, POLYBENCH_ARRAY(a_outputFromGpu));
++		//print_array(n, POLYBENCH_ARRAY(a_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/JACOBI2D/jacobi2D.cu polybenchGpu_new/CUDA/JACOBI2D/jacobi2D.cu
+--- polybenchGpu/CUDA/JACOBI2D/jacobi2D.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/JACOBI2D/jacobi2D.cu	2023-06-05 18:01:03.157053772 -0600
+@@ -30,7 +30,7 @@
+ #define TSTEPS 20
+ #define N 1000
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_array(int n, DATA_TYPE POLYBENCH_2D(A,N,N,n,n), DATA_TYPE POLYBENCH_2D(B,N,N,n,n))
+@@ -213,7 +213,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(n, POLYBENCH_ARRAY(a_outputFromGpu));
++		//print_array(n, POLYBENCH_ARRAY(a_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/LU/lu.cu polybenchGpu_new/CUDA/LU/lu.cu
+--- polybenchGpu/CUDA/LU/lu.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/LU/lu.cu	2023-06-05 18:01:03.157053772 -0600
+@@ -27,7 +27,7 @@
+ 
+ #define GPU_DEVICE 0
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void lu(int n, DATA_TYPE POLYBENCH_2D(A,N,N,n,n))
+@@ -202,7 +202,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(n, POLYBENCH_ARRAY(A_outputFromGpu));
++	//	print_array(n, POLYBENCH_ARRAY(A_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/MVT/mvt.cu polybenchGpu_new/CUDA/MVT/mvt.cu
+--- polybenchGpu/CUDA/MVT/mvt.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/MVT/mvt.cu	2023-06-05 18:01:03.161053693 -0600
+@@ -27,7 +27,7 @@
+ 
+ #define GPU_DEVICE 0
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_array(int n, DATA_TYPE POLYBENCH_2D(A, N, N, n, n), DATA_TYPE POLYBENCH_1D(x1, N, n), DATA_TYPE POLYBENCH_1D(x2, N, n), DATA_TYPE POLYBENCH_1D(y1, N, n), DATA_TYPE POLYBENCH_1D(y2, N, n))
+@@ -231,7 +231,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(n, POLYBENCH_ARRAY(x1_outputFromGpu), POLYBENCH_ARRAY(x2_outputFromGpu));
++		//print_array(n, POLYBENCH_ARRAY(x1_outputFromGpu), POLYBENCH_ARRAY(x2_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/SYR2K/syr2k.cu polybenchGpu_new/CUDA/SYR2K/syr2k.cu
+--- polybenchGpu/CUDA/SYR2K/syr2k.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/SYR2K/syr2k.cu	2023-06-05 18:01:03.165053617 -0600
+@@ -28,7 +28,7 @@
+ #define GPU_DEVICE 0
+ 
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_arrays(int ni, int nj,
+@@ -231,7 +231,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(ni, POLYBENCH_ARRAY(C_outputFromGpu));
++		//print_array(ni, POLYBENCH_ARRAY(C_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 
+diff -ruN polybenchGpu/CUDA/SYRK/syrk.cu polybenchGpu_new/CUDA/SYRK/syrk.cu
+--- polybenchGpu/CUDA/SYRK/syrk.cu	2023-06-05 19:19:22.495845616 -0600
++++ polybenchGpu_new/CUDA/SYRK/syrk.cu	2023-06-05 18:01:03.165053617 -0600
+@@ -28,7 +28,7 @@
+ #define GPU_DEVICE 0
+ 
+ 
+-#define RUN_ON_CPU
++//#define RUN_ON_CPU
+ 
+ 
+ void init_arrays(int ni, int nj,
+@@ -219,7 +219,7 @@
+ 
+ 	#else //print output to stderr so no dead code elimination
+ 
+-		print_array(ni, POLYBENCH_ARRAY(C_outputFromGpu));
++		//print_array(ni, POLYBENCH_ARRAY(C_outputFromGpu));
+ 
+ 	#endif //RUN_ON_CPU
+ 

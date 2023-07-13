@@ -1,0 +1,56 @@
+diff -ruN '--exclude=*.txt' '--exclude=*.out' '--exclude=*.pgm' '--exclude=*cleanref*' gpu-rodinia/common/make.config gpu-rodinia_new/common/make.config
+--- gpu-rodinia/common/make.config	2015-12-11 08:46:19.000000000 -0700
++++ gpu-rodinia_new/common/make.config	2023-06-06 14:22:22.652705921 -0600
+@@ -1,6 +1,6 @@
+ # CUDA toolkit installation path
+ CUDA_DIR = /usr/local/cuda
+-
++CUDA_FLAG = -arch sm_70 --generate-line-info # -use_fast_math
+ # CUDA toolkit libraries
+ CUDA_LIB_DIR := $(CUDA_DIR)/lib
+ ifeq ($(shell uname -m), x86_64)
+@@ -10,24 +10,32 @@
+ endif
+ 
+ # CUDA SDK installation path
+-#SDK_DIR = $(HOME)/NVIDIA_GPU_Computing_SDK/C
+-SDK_DIR = /usr/local/cuda-5.5/samples/
+-#SDK_DIR =/if10/kw5na/NVIDIA_CUDA_Computing_SDK4/C
++#SDK_DIR = /usr/local/cuda/samples/
++SDK_DIR = $(HOME)/NVIDIA_GPU_Computing_SDK/
+ 
+ # OPENCL
+ 
+ # NVIDIA_DIR
+-
+-# OPENCL_DIR =/if10/kw5na/NVIDIA_GPU_Computing_SDK4
+-# OPENCL_INC = $(OPENCL_DIR)/OpenCL/common/inc
+-# OPENCL_LIB = $(OPENCL_DIR)/OpenCL/common/lib -lOpenCL
++NV_OPENCL_DIR =/usr/local/cuda
++NV_OPENCL_INC = $(NV_OPENCL_DIR)/include
++NV_OPENCL_LIB = $(NV_OPENCL_DIR)/lib64
++
++# INTEL_DIR
++INTEL_OPENCL_DIR = /opt/intel/opencl
++INTEL_OPENCL_INC = $(INTEL_OPENCL_DIR)/include
++INTEL_OPENCL_LIB = $(INTEL_OPENCL_DIR)
+ 
+ # AMD_DIR
+-OPENCL_DIR = /if10/kw5na/Packages/AMD-APP-SDK-v2.8-RC-lnx64
+-OPENCL_INC = $(OPENCL_DIR)/include/ 
+-OPENCL_LIB = $(OPENCL_DIR)/lib/x86_64/ -lOpenCL
++# OPENCL_DIR = /usr/local/cuda
++# OPENCL_INC = $(OPENCL_DIR)/include/ 
++# OPENCL_LIB = $(OPENCL_DIR)/lib/x86_64/ -lOpenCL
+ #ifeq ($(shell uname -m), x86_64)
+ #     ifeq ($(shell if test -d $(OPENCL_DIR)/lib/x86_64/; then echo T; else echo F; fi), T)
+ #     	OPENCL_LIB = $(OPENCL_DIR)/lib/x86_64/
+ #     endif
+-#endif
+\ No newline at end of file
++#endif
++
++# DEFAULT OCL
++OPENCL_DIR = $(NV_OPENCL_DIR)
++OPENCL_INC = $(NV_OPENCL_INC)
++OPENCL_LIB = $(NV_OPENCL_LIB)

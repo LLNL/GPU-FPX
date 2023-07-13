@@ -1,0 +1,502 @@
+--- ./record_reg_vals/inject_funcs.cu	2022-02-03 09:33:25.000000000 -0700
++++ ./GPU-FPX/detector/inject_funcs.cu	2023-06-05 16:50:20.217954686 -0600
+@@ -25,9 +25,14 @@
+  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
++#define __STDC_FORMAT_MACROS 1
++#include <inttypes.h>
++
+ #include <stdint.h>
+ #include <stdio.h>
+ #include <cstdarg>
++#include "nvbit_reg_rw.h"
++
+ 
+ #include "utils/utils.h"
+ 
+@@ -35,11 +40,181 @@
+ #include "utils/channel.hpp"
+ 
+ /* contains definition of the mem_access_t structure */
+-#include "common.h"
++#include "../utility/common.h"
++
++__device__
++static 
++__forceinline__ 
++uint32_t _FPC_FP32_IS_INF(uint32_t reg_val) {
++    uint32_t exponent, mantissa; 
++    exponent = reg_val << 1;
++    exponent = exponent >> 24; 
++    mantissa = reg_val << 9; 
++    mantissa = mantissa >> 9;
++    if(exponent == (uint32_t)(255) && mantissa == (uint32_t)(0)){
++        return E_INF;
++    }
++    return 0; 
++}
++
++__device__
++static 
++__forceinline__ 
++uint32_t _FPC_FP32_IS_NAN(uint32_t reg_val) {
++    uint32_t exponent, mantissa; 
++    exponent = reg_val << 1;
++    exponent = exponent >> 24; 
++    mantissa = reg_val << 9; 
++    mantissa = mantissa >> 9;
++    if(exponent == (uint32_t)(255) && mantissa != (uint32_t)(0)){
++        return E_NAN;
++    }
++    return 0; 
++}
++
++__device__
++static 
++__forceinline__ 
++uint32_t _FPC_FP32_IS_SUBNORMAL(uint32_t reg_val) {
++    uint32_t exponent, mantissa; 
++    exponent = reg_val << 1;
++    exponent = exponent >> 24; 
++    mantissa = reg_val << 9; 
++    mantissa = mantissa >> 9;
++    if(exponent == (uint32_t)(0) && mantissa != (uint32_t)(0)){
++        return E_SUB;
++    }
++    return 0; 
++}
++
++__device__
++static 
++__forceinline__ 
++uint32_t _FPC_FP32_IS_0(uint32_t reg_val) {
++    if(_FPC_FP32_IS_INF(reg_val)!=0||_FPC_FP32_IS_NAN(reg_val)!=0){
++        return E_DIV0;
++    }
++    return 0;
++
++}
++
++__device__
++static 
++__forceinline__ 
++uint32_t _FPC_FP64_IS_NAN(uint64_t reg_val) {
++    uint64_t exponent, mantissa; 
++    exponent = reg_val << 1;
++    exponent = exponent >> 53; 
++    mantissa = reg_val << 12; 
++    mantissa = mantissa >> 12;
++    if(exponent == (uint64_t)(2047) && mantissa != (uint64_t)(0)){
++        return E_NAN;
++    }
++    return 0; 
++}
++
++
++__device__
++static 
++__forceinline__ 
++uint32_t _FPC_FP64_IS_INF(uint64_t reg_val) {
++    uint64_t exponent, mantissa; 
++    exponent = reg_val << 1;
++    exponent = exponent >> 53; 
++    mantissa = reg_val << 12; 
++    mantissa = mantissa >> 12;
++    if(exponent == (uint64_t)(2047) && mantissa == (uint64_t)(0)){
++        return E_INF;
++    }
++    return 0; 
++}
++
++__device__
++static 
++__forceinline__ 
++uint32_t _FPC_FP64_IS_SUBNORMAL(uint64_t reg_val) {
++    uint64_t exponent, mantissa; 
++    exponent = reg_val << 1;
++    exponent = exponent >> 53; 
++    mantissa = reg_val << 12; 
++    mantissa = mantissa >> 12;
++    if(exponent == (uint64_t)(0) && mantissa != (uint64_t)(0)){
++        return E_SUB;
++    }
++    return 0; 
++}
+ 
+-extern "C" __device__ __noinline__ void record_reg_val(int pred, int opcode_id,
+-                                                       uint64_t pchannel_dev,
+-                                                       int32_t num_regs...) {
++__device__
++static 
++__forceinline__ 
++uint32_t _FPC_FP64_IS_0(uint64_t reg_val) {
++    if(_FPC_FP64_IS_INF(reg_val)!=0||_FPC_FP64_IS_NAN(reg_val)!=0){
++        return E_DIV0;
++    }
++    return 0;
++
++}
++
++__device__
++static
++__forceinline__
++uint32_t encode_index(uint32_t mem_index, uint32_t exec) {
++    exec = exec -1;
++    uint32_t final_index = mem_index | exec; 
++    return final_index;
++}
++
++// __device__
++// static
++// __forceinline__
++// void send_info(int active_mask, int exec, uint32_t mem_index, const int laneid, const int first_laneid, reg_info_t &ri){
++        
++//     warp_info_t wi;
++        
++//     for (int tid = 0; tid < 32; tid++) {
++//         //TODO: only shfl to tid=0
++//             wi.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
++//             wi.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
++//             //printf("exce[i] is %d\n",ri.exce_type[tid]);
++//     }
++
++//     /* first active lane pushes information on the channel */
++//     if (first_laneid == laneid) {
++//         for(int i =0; i< 32; i++){
++//             if(wi.exce_type[i]>0){
++//                 uint32_t e = wi.exce_type[i] -1;
++//                 uint32_t final_index = mem_index | e; 
++//                 return final_index;
++//                 uint32_t table_index = encode_index(wi.mem_index_ar[i], wi.exce_type[i]);
++//                 //uint32_t index_info = device_table[table_index];
++//                 //printf("table index is %u\n", table_index);
++//                 uint32_t index_info = atomicAdd((unsigned int*)&device_table[table_index], 1);
++//                 if(index_info == 0) {
++//                     //atomicAdd((unsigned int*)&device_table[table_index], 1);
++//                     ri.warp_exec_info[i] = table_index;
++//                     ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
++//                     channel_dev->push(&ri, sizeof(reg_info_t));
++//                 }   
++//                 // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
++//                 // channel_dev->push(&ri, sizeof(reg_info_t));
++//                 // break;
++//             }
++//         }
++//     }
++// }
++
++extern "C" __device__ __noinline__ void record_reg_val_32_stand(int pred, int opcode_id,int kernel_id,
++                                                    //uint64_t location,
++                                                    //int loc_id,
++                                                    //ushort k_loc_id,
++                                                    //int32_t inst_type,
++                                                    uint64_t pdevice_table,
++                                                    uint32_t mem_index,
++                                                    uint64_t pchannel_dev,
++                                                    uint32_t low_add, 
++                                                    uint32_t high_add
++                                                    ) {
++    
+     if (!pred) {
+         return;
+     }
+@@ -55,27 +230,284 @@
+     ri.cta_id_y = cta.y;
+     ri.cta_id_z = cta.z;
+     ri.warp_id = get_warpid();
++    //ri.location = (char*)location;
+     ri.opcode_id = opcode_id;
+-    ri.num_regs = num_regs;
++    ri.kernel_id = kernel_id;
++    //ri.loc_id = loc_id;
++    //ri.inst_type = inst_type;
++    ri.mem_index = mem_index;
++    uint32_t val_low = low_add;
++    uint32_t val_hi = high_add;
++    // uint32_t *device_table = (uint32_t *)pdevice_table;
++    uint32_t exce = 0;
++
++
++    
++    // for(int tid =0; tid<32; tid++){
++    //     ri.reg_vals[tid][0] = __shfl_sync(active_mask, val_low, tid);
++    //     ri.reg_vals[tid][1] = __shfl_sync(active_mask, val_hi, tid);
++    // }
++
++
++    exce = _FPC_FP32_IS_NAN(val_low);
++    exce = exce+_FPC_FP32_IS_INF(val_low);
++    exce = exce+_FPC_FP32_IS_SUBNORMAL(val_low);
++        //printf("exce is %d\n",exce);
++    for (int tid = 0; tid < 32; tid++) {
++        //TODO: only shfl to tid=0
++            ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
++            ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
++            //printf("exce[i] is %d\n",ri.exce_type[tid]);
++    }
+ 
+-    if (num_regs) {
+-        va_list vl;
+-        va_start(vl, num_regs);
+-
+-        for (int i = 0; i < num_regs; i++) {
+-            uint32_t val = va_arg(vl, uint32_t);
+-
+-            /* collect register values from other threads */
+-            for (int tid = 0; tid < 32; tid++) {
+-                ri.reg_vals[tid][i] = __shfl_sync(active_mask, val, tid);
++    /* first active lane pushes information on the channel */
++    if (first_laneid == laneid) {
++        for(int i =0; i< 32; i++){
++            if(ri.exce_type[i]>0){
++                uint32_t table_index = encode_index(ri.mem_index_ar[i], ri.exce_type[i]);
++                //uint32_t index_info = device_table[table_index];
++                //printf("table index is %u\n", table_index);
++                uint32_t *device_table = (uint32_t *)pdevice_table;
++                uint32_t index_info = atomicAdd((unsigned int*)&device_table[table_index], 1);
++                if(index_info == 0) {
++                   // atomicAdd((unsigned int*)&device_table[table_index], 1);
++                    ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
++                    channel_dev->push(&ri, sizeof(reg_info_t));
++                    break;
++                }   
++                // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
++                // channel_dev->push(&ri, sizeof(reg_info_t));
++                // break;
+             }
+         }
+-        va_end(vl);
++    }
++}
++
++                                
++extern "C" __device__ __noinline__ void record_reg_val_32_div0(int pred, int opcode_id,int kernel_id,
++                                                    //uint64_t location,
++                                                    //int loc_id,
++                                                    //ushort k_loc_id,
++                                                    //int32_t inst_type,
++                                                    uint64_t pdevice_table,
++                                                    uint32_t mem_index,
++                                                    uint64_t pchannel_dev,
++                                                    uint32_t low_add, 
++                                                    uint32_t high_add
++                                                    ) {
++    
++    if (!pred) {
++        return;
+     }
+ 
++    int active_mask = __ballot_sync(__activemask(), 1);
++    const int laneid = get_laneid();
++    const int first_laneid = __ffs(active_mask) - 1;
++
++    reg_info_t ri;
++
++    int4 cta = get_ctaid();
++    ri.cta_id_x = cta.x;
++    ri.cta_id_y = cta.y;
++    ri.cta_id_z = cta.z;
++    ri.warp_id = get_warpid();
++    ri.opcode_id = opcode_id;
++    ri.kernel_id = kernel_id;
++    //ri.loc_id = loc_id;
++    //ri.inst_type = inst_type;
++    ri.mem_index = mem_index;
++    uint32_t val_low = low_add;
++    uint32_t val_hi = high_add;
++    uint32_t exce = 0;
++    // uint32_t *device_table = (uint32_t *)pdevice_table;
++
++
++    
++    // for(int tid =0; tid<32; tid++){
++    //     ri.reg_vals[tid][0] = __shfl_sync(active_mask, val_low, tid);
++    //     ri.reg_vals[tid][1] = __shfl_sync(active_mask, val_hi, tid);
++    // }
++
++    exce = _FPC_FP32_IS_0(val_low);
++    //printf("val_low = %f\n",(float *)val_hi);
++    for (int tid = 0; tid < 32; tid++) {
++            ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
++            ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
++
++    }
+     /* first active lane pushes information on the channel */
+     if (first_laneid == laneid) {
+-        ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
+-        channel_dev->push(&ri, sizeof(reg_info_t));
++        //only transfer if there's an excpeionts
++        // int sum = 0;
++        //printf("Checking opcode_id = %d\n",opcode_id);
++        for(int i =0; i< 32; i++){
++            if(ri.exce_type[i]>0){
++                uint32_t table_index = encode_index(ri.mem_index_ar[i], ri.exce_type[i]);
++                //uint32_t index_info = device_table[table_index];
++                uint32_t *device_table = (uint32_t *)pdevice_table;
++                uint32_t index_info = atomicAdd((unsigned int*)&device_table[table_index], 1);
++                if(index_info == 0) {
++                   // atomicAdd((unsigned int*)&device_table[table_index], 1);
++                    ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
++                    channel_dev->push(&ri, sizeof(reg_info_t));
++                    break;                    
++                }   
++                // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
++                // channel_dev->push(&ri, sizeof(reg_info_t));
++                // break;
++            }
++        }
+     }
+ }
++
++extern "C" __device__ __noinline__ void record_reg_val_64_stand(int pred, int opcode_id,int kernel_id,
++                                                    //uint64_t location,
++                                                    //int loc_id,
++                                                    //ushort k_loc_id,
++                                                    //int32_t inst_type,
++                                                    uint64_t pdevice_table,
++                                                    uint32_t mem_index,
++                                                    uint64_t pchannel_dev,
++                                                    uint32_t low_add, 
++                                                    uint32_t high_add
++                                                    ) {
++    
++    if (!pred) {
++        return;
++    }
++
++    int active_mask = __ballot_sync(__activemask(), 1);
++    const int laneid = get_laneid();
++    const int first_laneid = __ffs(active_mask) - 1;
++
++    reg_info_t ri;
++
++    int4 cta = get_ctaid();
++    ri.cta_id_x = cta.x;
++    ri.cta_id_y = cta.y;
++    ri.cta_id_z = cta.z;
++    ri.warp_id = get_warpid();
++
++    //ri.location = (char*)location;
++    ri.opcode_id = opcode_id;
++    ri.kernel_id = kernel_id;
++    //ri.loc_id = loc_id;
++    //ri.inst_type = inst_type;
++    ri.mem_index = mem_index;
++    uint32_t val_low = low_add;
++    uint32_t val_hi = high_add;
++    uint32_t exce = 0;
++    // uint32_t *device_table = (uint32_t *)pdevice_table;
++
++
++
++    
++    // for(int tid =0; tid<32; tid++){
++    //     ri.reg_vals[tid][0] = __shfl_sync(active_mask, val_low, tid);
++    //     ri.reg_vals[tid][1] = __shfl_sync(active_mask, val_hi, tid);
++    // }
++  
++    uint64_t fp64_val = (uint64_t) val_hi << 32 | val_low;
++
++    exce = _FPC_FP64_IS_NAN(fp64_val);
++    exce = exce+_FPC_FP64_IS_INF(fp64_val);
++    exce = exce+_FPC_FP64_IS_SUBNORMAL(fp64_val);
++    for (int tid = 0; tid < 32; tid++) {
++            ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
++            ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
++    }
++
++
++    /* first active lane pushes information on the channel */
++    if (first_laneid == laneid) {
++        for(int i =0; i< 32; i++){
++            if(ri.exce_type[i]>0){
++                uint32_t table_index = encode_index(ri.mem_index_ar[i], ri.exce_type[i]);
++                //atomicAdd((unsigned int*)&device_table[table_index], 1);
++                //uint32_t index_info = device_table[table_index]; 
++                uint32_t *device_table = (uint32_t *)pdevice_table;
++                uint32_t index_info = atomicAdd((unsigned int*)&device_table[table_index], 1);
++                if(index_info == 0) {
++                   // atomicAdd((unsigned int*)&device_table[table_index], 1);
++                    ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
++                    channel_dev->push(&ri, sizeof(reg_info_t));
++                    break; 
++                }   
++                //printf("index info is %u\n", index_info);            
++                
++                //break;
++            }
++        }
++    }
++}
++
++extern "C" __device__ __noinline__ void record_reg_val_64_div0(int pred, int opcode_id,int kernel_id,
++                                                    //uint64_t location,
++                                                    //int loc_id,
++                                                    //ushort k_loc_id,
++                                                    //int32_t inst_type,
++                                                    uint64_t pdevice_table,
++                                                    uint32_t mem_index,
++                                                    uint64_t pchannel_dev,
++                                                    uint32_t low_add, 
++                                                    uint32_t high_add
++                                                    ) {
++    
++    if (!pred) {
++        return;
++    }
++
++    int active_mask = __ballot_sync(__activemask(), 1);
++    const int laneid = get_laneid();
++    const int first_laneid = __ffs(active_mask) - 1;
++
++    reg_info_t ri;
++
++    int4 cta = get_ctaid();
++    ri.cta_id_x = cta.x;
++    ri.cta_id_y = cta.y;
++    ri.cta_id_z = cta.z;
++    ri.warp_id = get_warpid();
++    ri.opcode_id = opcode_id;
++    ri.kernel_id = kernel_id;
++    //ri.loc_id = loc_id;
++    //ri.location = (char*)location;
++    //ri.inst_type = inst_type;
++    ri.mem_index = mem_index;
++    uint32_t val_low = low_add;
++    uint32_t val_hi = high_add;
++    uint32_t exce = 0;
++    // uint32_t *device_table = (uint32_t *)pdevice_table;
++
++
++    // for(int tid =0; tid<32; tid++){
++    //     ri.reg_vals[tid][0] = __shfl_sync(active_mask, val_low, tid);
++    //     ri.reg_vals[tid][1] = __shfl_sync(active_mask, val_hi, tid);
++    // }
++    uint64_t fp64_val = (uint64_t) val_hi << 32 | val_low;
++    exce = _FPC_FP64_IS_0(fp64_val);
++    for (int tid = 0; tid < 32; tid++) {
++        ri.exce_type[tid] = __shfl_sync(active_mask, exce, tid);
++        ri.mem_index_ar[tid] = __shfl_sync(active_mask, mem_index, tid);
++    }
++    if (first_laneid == laneid) {
++        for(int i =0; i< 32; i++){
++            if(ri.exce_type[i]>0){
++                uint32_t table_index = encode_index(ri.mem_index_ar[i], ri.exce_type[i]);
++                //uint32_t index_info = device_table[table_index];
++                uint32_t *device_table = (uint32_t *)pdevice_table;
++                uint32_t index_info = atomicAdd((unsigned int*)&device_table[table_index], 1);
++                if(index_info == 0) {  
++//		    atomicAdd((unsigned int*)&device_table[table_index], 1);
++                    ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
++                    channel_dev->push(&ri, sizeof(reg_info_t));
++                    break; 
++                }   
++                // ChannelDev *channel_dev = (ChannelDev *)pchannel_dev;
++                // channel_dev->push(&ri, sizeof(reg_info_t));
++                // break;
++            }
++        }
++    }
++}
++

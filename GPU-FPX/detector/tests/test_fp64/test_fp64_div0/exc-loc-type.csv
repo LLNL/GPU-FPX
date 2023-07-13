@@ -1,0 +1,4 @@
+DIV0,dot_product.cu:23,FP64
+NaN,dot_product.cu:23,FP64
+INF,dot_product.cu:32,FP64
+INF,dot_product.cu:25,FP64

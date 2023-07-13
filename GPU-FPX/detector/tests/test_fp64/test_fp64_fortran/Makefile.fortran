@@ -1,0 +1,9 @@
+
+
+all:
+	xlf90-gpu -qoffload -qsmp -g -o main main.f90
+	#nvfortran -O0 -o main main.f90 -mp=gpu -g
+run: all
+	./main
+clean: 
+	rm -rf main

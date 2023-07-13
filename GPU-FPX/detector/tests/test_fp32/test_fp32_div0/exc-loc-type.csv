@@ -1,0 +1,3 @@
+DIV0,dot_product.cu:25,FP32
+NaN,dot_product.cu:25,FP32
+INF,dot_product.cu:27,FP32

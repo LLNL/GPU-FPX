@@ -1,0 +1,17 @@
+
+#NVCC=nvcc --generate-line-info
+#NVCC=/usr/local/cuda-11.0/bin/nvcc --generate-line-info
+include ../../../../utility/config.mk
+
+
+all:
+	$(NVCC) -arch=sm_$(ARCH) $(TEST_FLAGS) $(OPT_FLAGS) -c dot_product.cu
+	$(NVCC) -arch=sm_$(ARCH) $(TEST_FLAGS) $(OPT_FLAGS) -c main.cu
+	$(NVCC) -o main dot_product.o main.o
+
+run:all
+	./main
+
+
+clean:
+	rm -rf *.o main __pycache__ *.ii .fpc_log.txt

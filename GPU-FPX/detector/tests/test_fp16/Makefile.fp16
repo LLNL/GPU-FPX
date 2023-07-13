@@ -1,0 +1,17 @@
+COMPILER:=nvcc
+FLAGS:=-arch=sm_75
+all: main main2 main3 main_h
+main:
+	$(COMPILER) -cubin $(FLAGS) $@.cu -o $@
+
+main2:
+	$(COMPILER) $(FLAGS) $@.cu -o $@
+main2.5:
+	$(COMPILER) $(FLAGS) $@.cu -o $@
+main3: 
+	$(COMPILER) $(FLAGS) -I. $@.cu -o $@
+main_h:
+	$(COMPILER) $(FLAGS) -I. $@.cu -o $@
+clean:
+	rm -rf main main2 main2.5 main3 main_h
+
