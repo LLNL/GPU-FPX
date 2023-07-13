@@ -143,7 +143,12 @@ For questions, contact Ganesh Gopalakrishnan [ganesh@cs.utah.edu](mailto:ganesh@
 
 To cite GPU-FPX please use
 ```
-@
+@inproceedings{hpdc2023-gpu-fpx,
+author = {Xinyi Li and Ignacio Laguna and Katarzyna Swirydowicz and Bo Fang and Ang Li and Ganesh Gopalakrishnan},
+title = {Design and Evaluation of GPU-FPX: A Low-Overhead tool for Floating-Point Exception Detection in NVIDIA GPUs},
+booktitle = {ACM HPDC 2023 (the 32nd International Symposium on High-Performance Parallel and Distributed Computing)},
+month = jun,
+year = 2023}
 ```
 
 
