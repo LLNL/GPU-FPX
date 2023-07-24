@@ -24,8 +24,8 @@ make analyzer
 ```
 to build them separately. 
 
-### !Note
-You should change the `Arch` in Makefile at `./nvbit_release/tools/GPU-FPX/analyzer/` and `./nvbit_release/tools/GPU-FPX/detector/` if you are not on the Ampere Machine. This parameter will be fixed in the future. 
+### Note
+You should change the `Arch` in `config.mk` at `./nvbit_release/tools/GPU-FPX/utility` if you are not on the Ampere Machine. This parameter will be fixed in the future. 
 
 This will generate two shared objects
 ```
