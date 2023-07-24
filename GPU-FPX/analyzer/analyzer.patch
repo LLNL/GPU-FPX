@@ -68,10 +68,10 @@
          "End of the instruction interval where to apply instrumentation");
      GET_VAR_INT(verbose, "TOOL_VERBOSE", 0, "Enable verbosity inside the tool");
 +    GET_VAR_INT(func_detailes, "ENABLE_FUN_DETAIL", 0, "Enable detailed function information for kernel");
-+    GET_VAR_INT(print_ill_instr, "PRINT_ILL_INSTR", 0, "Print the instruction which cause the exception");
++    GET_VAR_INT(print_ill_instr, "PRINT_ILL_INSTR", 0, "Print the instruction which causes the exception");
 +    GET_VAR_INT(sampling, "SAMPLING", 0, "Instrument a repeat kernel every x (defined by the users) time ");
-+    GET_VAR_INT(progagated, "PROPAGATE", 0, "Print the progagation of exceptional values.");
-+    GET_VAR_INT(enable_compare, "ENABLE_COMPARE", 0, "Print the if the exceptions may exist in the comparsision instruction.");
++    GET_VAR_INT(progagated, "PROPAGATE", 0, "Print the propagation of exceptional values.");
++    GET_VAR_INT(enable_compare, "ENABLE_COMPARE", 0, "Print the if the exceptions may exist in the comparison instruction.");
      std::string pad(100, '-');
      printf("%s\n", pad.c_str());
  }
