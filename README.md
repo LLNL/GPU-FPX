@@ -10,13 +10,14 @@ There are two components in GPU-FPX:
 - A `detector` to detect the floating point exceptions and report their locations;
 - An `analyzer` which can display how an exception flows within one instruction. This may help debug and fix the exceptions in the program being analyzed.
 
+
 > Ensure you have the right platform
-> You should change the `Arch` in `config.mk` at `./nvbit_release/tools/GPU-FPX/utility` if you are not on the Ampere Machine. This parameter will be fixed in the future. 
+> You should change the `Arch` in `config.mk` at `./nvbit_release/tools/GPU-FPX/utility` if you are not on the Ampere Machine. This parameter will be fixed in the future.
 
 To build both components, just run 
 the following commands:
 ```bash
-git clone http://github/LLNL/GPU-FPX
+git clone https://github.com/LLNL/GPU-FPX
 cd GPU-FPX
 make
 ```
