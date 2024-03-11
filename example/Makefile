@@ -18,7 +18,7 @@ analyze-1:example1
 	LD_PRELOAD=../nvbit_release/tools/GPU-FPX/analyzer//analyzer.so ./example1
 
 example2:
-	nvcc --generate-line-info example1.cu -o example2
+	nvcc --generate-line-info example2.cu -o example2
 
 run-2:example2
 	./example2
