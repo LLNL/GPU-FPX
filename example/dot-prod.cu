@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 
-__global__ void dot_prod(float *x, float *y, int size)
+__global__ void example(float *x, float *y, int size)
 {
   float d;
   for (int i=0; i < size; ++i)
