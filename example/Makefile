@@ -20,6 +20,9 @@ analyze-1:example1
 example2:
 	nvcc --generate-line-info example2.cu -o example2
 
+example2-fast:
+	nvcc --generate-line-info --use_fast_math example2.cu -o example2
+
 run-2:example2
 	./example2
 
