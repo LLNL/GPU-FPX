@@ -23,10 +23,10 @@ example2:
 run-2:example2
 	./example2
 
-detect-1:example2
+detect-2:example2
 	LD_PRELOAD=../nvbit_release/tools/GPU-FPX/detector/detector.so ./example2
 
-analyze-1:example2
+analyze-2:example2
 	LD_PRELOAD=../nvbit_release/tools/GPU-FPX/analyzer//analyzer.so ./example2
 
 clean:
