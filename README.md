@@ -12,7 +12,7 @@ There are two components in GPU-FPX:
 
 
 > Ensure you have the right platform
-> You should change the `Arch` in `config.mk` at `./nvbit_release/tools/GPU-FPX/utility` if you are not on the Ampere Machine. This parameter will be fixed in the future.
+> You should change the `Arch` in `config.mk` at `./GPU-FPX/GPU-FPX/utility` if you are not on the Ampere Machine. This parameter will be fixed in the future.
 
 To build both components, just run 
 the following commands:
@@ -99,8 +99,8 @@ int main(int argc, char **argv)
 Observe that there is a division by zero operation on line 13 resulting in a NaN in the final result. 
 #### Compiling and running it
 ```bash
-nvcc --generate-line-info dot-prod.cu -o dot-prod
-./dot-prod
+nvcc --generate-line-info example1.cu -o example1
+./example1
 ```
 It will output
 ```
@@ -111,7 +111,7 @@ done
 ```
 #### Using the`detector`
 ```bash
-LD_PRELOAD=/your/path/to/GPU-FPX/nvbit_release/tools/GPU-FPX/detector/detector.so ./dot-prod
+LD_PRELOAD=/your/path/to/GPU-FPX/nvbit_release/tools/GPU-FPX/detector/detector.so ./example1
 ```
 It will generate exceptional report, we paste some segments here:
 ```
@@ -125,7 +125,7 @@ We can see it successfully detects the division by zero operation on line 13.
 
 #### Using `analyzer`
 ```bash
-LD_PRELOAD=/your/path/to/GPU-FPX/nvbit_release/tools/GPU-FPX/analyzer/analyzer.so ./dot-prod
+LD_PRELOAD=/your/path/to/GPU-FPX/nvbit_release/tools/GPU-FPX/analyzer/analyzer.so ./example1
 ```
 We paste some analyzer segments here: 
 ```
