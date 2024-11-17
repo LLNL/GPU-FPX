@@ -1,41 +1,41 @@
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
-
-__global__ void dot_prod(float *x, float *y, int size)
+__global__ void example(float *x, float *y, int nfloat)
 {
-  float d;
-  for (int i=0; i < size; ++i)
-  {
-    float tmp;
-    tmp = x[i]*y[i];
-    tmp = (tmp-tmp) / (tmp - tmp); // division by zero, produce NaN
-    d += tmp; // d=NaN
-  }
-
   int tid = blockIdx.x * blockDim.x + threadIdx.x;
+  float d;
+  float tmp;
+  int   i=0; // simplify example, removing 'for'
+
+  tmp = x[i] / (x[i]-y[i]);
+  d = sqrt(tmp);
+
+  tid = blockIdx.x * blockDim.x + threadIdx.x;
   if (tid == 0) {
     printf("dot: %f\n", d);
   }
 }
+
 int main(int argc, char **argv)
 {
-  int n = 3;
-  int nbytes = n*sizeof(float); 
+  int nfloat = 2;
+  int nbytes = nfloat*sizeof(float);
   float *d_a = 0;
   cudaMalloc(&d_a, nbytes);
 
   float *data = (float *)malloc(nbytes);
-  for (int i=0; i < n; ++i)
+  for (int i=0; i < nfloat; ++i)
   {
     data[i] = (float)(i+1);
   }
 
   cudaMemcpy((void *)d_a, (void *)data, nbytes, cudaMemcpyHostToDevice);
-
   printf("Calling kernel\n");
-  dot_prod<<<1,1>>>(d_a, d_a, nbytes);
+
+  example<<<1,1>>>(d_a, d_a, nfloat);
+
   cudaDeviceSynchronize();
   printf("done\n");
 

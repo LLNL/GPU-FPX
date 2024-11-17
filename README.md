@@ -10,10 +10,14 @@ There are two components in GPU-FPX:
 - A `detector` to detect the floating point exceptions and report their locations;
 - An `analyzer` which can display how an exception flows within one instruction. This may help debug and fix the exceptions in the program being analyzed.
 
+
+> Ensure you have the right platform
+> You should change the `Arch` in `config.mk` at `./GPU-FPX/GPU-FPX/utility` if you are not on the Ampere Machine. This parameter will be fixed in the future.
+
 To build both components, just run 
 the following commands:
 ```bash
-git clone http://github/LLNL/GPU-FPX
+git clone https://github.com/LLNL/GPU-FPX
 cd GPU-FPX
 make
 ```
@@ -24,8 +28,10 @@ make analyzer
 ```
 to build them separately. 
 
+
 ### Note: ensure you have the right platform
 You should change the `Arch` in `config.mk` at `./nvbit_release/tools/GPU-FPX/utility` to your GPU compute capability (can be found here : https://en.wikipedia.org/wiki/CUDA#:~:text=Compute%20Capability%2C%20GPU%20semiconductors%20and%20Nvidia%20GPU%20board%20products). This parameter will be fixed in the future. 
+
 
 This will generate two shared objects
 ```
@@ -97,8 +103,8 @@ int main(int argc, char **argv)
 Observe that there is a division by zero operation on line 13 resulting in a NaN in the final result. 
 #### Compiling and running it
 ```bash
-nvcc --generate-line-info dot-prod.cu -o dot-prod
-./dot-prod
+nvcc --generate-line-info example1.cu -o example1
+./example1
 ```
 It will output
 ```
@@ -109,7 +115,7 @@ done
 ```
 #### Using the`detector`
 ```bash
-LD_PRELOAD=/your/path/to/GPU-FPX/nvbit_release/tools/GPU-FPX/detector/detector.so ./dot-prod
+LD_PRELOAD=/your/path/to/GPU-FPX/nvbit_release/tools/GPU-FPX/detector/detector.so ./example1
 ```
 It will generate exceptional report, we paste some segments here:
 ```
@@ -123,7 +129,7 @@ We can see it successfully detects the division by zero operation on line 13.
 
 #### Using `analyzer`
 ```bash
-LD_PRELOAD=/your/path/to/GPU-FPX/nvbit_release/tools/GPU-FPX/analyzer/analyzer.so ./dot-prod
+LD_PRELOAD=/your/path/to/GPU-FPX/nvbit_release/tools/GPU-FPX/analyzer/analyzer.so ./example1
 ```
 We paste some analyzer segments here: 
 ```
