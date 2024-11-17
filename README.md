@@ -29,6 +29,10 @@ make analyzer
 to build them separately. 
 
 
+### Note: ensure you have the right platform
+You should change the `Arch` in `config.mk` at `./nvbit_release/tools/GPU-FPX/utility` to your GPU compute capability (can be found here : https://en.wikipedia.org/wiki/CUDA#:~:text=Compute%20Capability%2C%20GPU%20semiconductors%20and%20Nvidia%20GPU%20board%20products). This parameter will be fixed in the future. 
+
+
 This will generate two shared objects
 ```
 ./nvbit_release/tools/GPU-FPX/analyzer/analyzer.so
