@@ -11,8 +11,6 @@ There are two components in GPU-FPX:
 - An `analyzer` which can display how an exception flows within one instruction. This may help debug and fix the exceptions in the program being analyzed.
 
 
-> Ensure you have the right platform
-> You should change the `Arch` in `config.mk` at `./GPU-FPX/GPU-FPX/utility` if you are not on the Ampere Machine. This parameter will be fixed in the future.
 
 To build both components, just run 
 the following commands:
@@ -29,8 +27,8 @@ make analyzer
 to build them separately. 
 
 
-### Note: ensure you have the right platform
-You should change the `Arch` in `config.mk` at `./nvbit_release/tools/GPU-FPX/utility` to your GPU compute capability (can be found here : https://en.wikipedia.org/wiki/CUDA#:~:text=Compute%20Capability%2C%20GPU%20semiconductors%20and%20Nvidia%20GPU%20board%20products). This parameter will be fixed in the future. 
+> ### Note: ensure you have the right platform
+> You should change the `Arch` in `config.mk` at `./nvbit_release/tools/GPU-FPX/utility` to your GPU compute capability (can be found [here](https://en.wikipedia.org/wiki/CUDA#:~:text=Compute%20Capability%2C%20GPU%20semiconductors%20and%20Nvidia%20GPU%20board%20products). This parameter will be fixed in the future. 
 
 
 This will generate two shared objects
