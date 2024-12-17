@@ -2,7 +2,9 @@
 
 all:analyzer detector
 
-nvbit_tar=nvbit-Linux-x86_64-1.5.5.tar.bz2
+nvbit_version = 1.7.2
+
+nvbit_tar=nvbit-Linux-x86_64-$(nvbit_version).tar.bz2
 nvbit_tool=$(shell pwd)/nvbit_release/tools
 GPUFPX_home=$(nvbit_tool)/GPU-FPX
 
@@ -40,8 +42,8 @@ nvbit_release: $(nvbit_tar)
 	tar -xf $<
 
 $(nvbit_tar):
-	wget https://github.com/NVlabs/NVBit/releases/download/1.5.5/$@
+	wget https://github.com/NVlabs/NVBit/releases/download/v$(nvbit_version)/$@
 
 clean:
 	rm -rf nvbit_release/
-	rm nvbit-Linux-x86_64-1.5.5.tar.bz2
+	rm nvbit-Linux-x86_64-$(nvbit_version).tar.bz2

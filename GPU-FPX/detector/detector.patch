@@ -1,6 +1,55 @@
---- ./record_reg_vals/record_reg_vals.cu	2022-02-03 09:33:25.000000000 -0700
-+++ ./GPU-FPX/detector/detector.cu	2023-06-05 16:50:20.217954686 -0600
-@@ -25,15 +25,6 @@
+--- ./record_reg_vals/record_reg_vals.cu	2024-12-12 14:29:26.000000000 -0700
++++ ./GPU-FPX/detector/detector.cu	2024-12-17 12:36:53.484091227 -0700
+@@ -1,43 +1,30 @@
+-/*
+- * SPDX-FileCopyrightText: Copyright (c) 2019 NVIDIA CORPORATION & AFFILIATES.
+- * All rights reserved.
+- * SPDX-License-Identifier: BSD-3-Clause
++/* Copyright (c) 2019, NVIDIA CORPORATION. All rights reserved.
+  *
+  * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
++ * modification, are permitted provided that the following conditions
++ * are met:
++ *  * Redistributions of source code must retain the above copyright
++ *    notice, this list of conditions and the following disclaimer.
++ *  * Redistributions in binary form must reproduce the above copyright
++ *    notice, this list of conditions and the following disclaimer in the
++ *    documentation and/or other materials provided with the distribution.
++ *  * Neither the name of NVIDIA CORPORATION nor the names of its
++ *    contributors may be used to endorse or promote products derived
++ *    from this software without specific prior written permission.
+  *
+- * 1. Redistributions of source code must retain the above copyright notice, this
+- * list of conditions and the following disclaimer.
+- *
+- * 2. Redistributions in binary form must reproduce the above copyright notice,
+- * this list of conditions and the following disclaimer in the documentation
+- * and/or other materials provided with the distribution.
+- *
+- * 3. Neither the name of the copyright holder nor the names of its
+- * contributors may be used to endorse or promote products derived from
+- * this software without specific prior written permission.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ``AS IS'' AND ANY
++ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
++ * PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE COPYRIGHT OWNER OR
++ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
++ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
++ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
++ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
++ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
++ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
  
@@ -16,7 +65,7 @@
  /* every tool needs to include this once */
  #include "nvbit_tool.h"
  
-@@ -44,10 +35,14 @@
+@@ -48,10 +35,14 @@
  #include "utils/channel.hpp"
  
  /* contains definition of the reg_info_t structure */
@@ -33,7 +82,7 @@
  static __managed__ ChannelDev channel_dev;
  static ChannelHost channel_host;
  
-@@ -63,11 +58,21 @@
+@@ -67,11 +58,21 @@
  /* global control variables for this tool */
  uint32_t instr_begin_interval = 0;
  uint32_t instr_end_interval = UINT32_MAX;
@@ -58,7 +107,7 @@
  
  void nvbit_at_init() {
      setenv("CUDA_MANAGED_FORCE_DEVICE_ALLOC", "1", 1);
-@@ -78,12 +83,17 @@
+@@ -82,12 +83,17 @@
          instr_end_interval, "INSTR_END", UINT32_MAX,
          "End of the instruction interval where to apply instrumentation");
      GET_VAR_INT(verbose, "TOOL_VERBOSE", 0, "Enable verbosity inside the tool");
@@ -76,7 +125,7 @@
  void instrument_function_if_needed(CUcontext ctx, CUfunction func) {
      /* Get related functions of the kernel (device function that can be
       * called by the kernel) */
-@@ -100,6 +110,18 @@
+@@ -104,6 +110,18 @@
          if (!already_instrumented.insert(f).second) {
              continue;
          }
@@ -95,7 +144,7 @@
          const std::vector<Instr *> &instrs = nvbit_get_instrs(ctx, f);
          if (verbose) {
              printf("Inspecting function %s at address 0x%lx\n",
-@@ -109,51 +131,160 @@
+@@ -113,51 +131,160 @@
          uint32_t cnt = 0;
          /* iterate on all the static instructions in the function */
          for (auto instr : instrs) {
@@ -126,7 +175,7 @@
 +            else if (is_FP32_instruction(instr->getSass())){
 +              fp32_inst = true;
 +              //printf("SASS of FP32 is %s\n", instr->getSass());
-             }
++            }
 +            else if (is_FP64_instruction(instr->getSass()))
 +              fp32_inst = false;
 +            else
@@ -171,15 +220,14 @@
 +            if(loc_id > 131071) {
 +              std::cout << "too many FP locations which gpufpx cannot handle." << std::endl;
 +              exit(-1);
-+            }
+             }
 +            // if(verbose){
 +            //   std::cout << "The location is: " << locTupleToLoc(id_to_loc_map[loc_id]) << std::endl;
 +            // }
 +  
 +            std::vector<int> reg_num_list;
 +            //printf("op_offset is %d\n",op_offset);
- 
--            if (sass_to_id_map.find(instr->getSass()) ==
++
 +            const InstrType::operand_t *op = instr->getOperand(0);
 +    
 +            if(op->type != InstrType::OperandType::REG)
@@ -200,7 +248,8 @@
 +            }
 +            
 +            assert(reg_num_list.size()==2);
-+
+ 
+-            if (sass_to_id_map.find(instr->getSass()) ==
 +            int opcode_id = 0;
 +            if(print_ill_instr){
 +              if (sass_to_id_map.find(instr->getSass()) ==
@@ -281,38 +330,70 @@
          }
      }
  }
-@@ -174,31 +305,67 @@
+@@ -177,62 +304,68 @@
+                          const char *name, void *params, CUresult *pStatus) {
      if (skip_flag) return;
  
-     if (cbid == API_CUDA_cuLaunchKernel_ptsz ||
--        cbid == API_CUDA_cuLaunchKernel) {
-+        cbid == API_CUDA_cuLaunchKernel ||
+-    /* Identify all the possible CUDA launch events */
+-    if (cbid == API_CUDA_cuLaunch || cbid == API_CUDA_cuLaunchKernel_ptsz ||
+-        cbid == API_CUDA_cuLaunchGrid || cbid == API_CUDA_cuLaunchGridAsync ||
++    if (cbid == API_CUDA_cuLaunchKernel_ptsz ||
+         cbid == API_CUDA_cuLaunchKernel ||
+-        cbid == API_CUDA_cuLaunchKernelEx ||
+-        cbid == API_CUDA_cuLaunchKernelEx_ptsz) {
+-        /* cast params to launch parameter based on cbid since if we are here
+-         * we know these are the right parameters types */
+-        CUfunction func;
+-        if (cbid == API_CUDA_cuLaunchKernelEx_ptsz ||
+-            cbid == API_CUDA_cuLaunchKernelEx) {
+-            cuLaunchKernelEx_params* p = (cuLaunchKernelEx_params*)params;
+-            func = p->f;
+-        } else {
+-            cuLaunchKernel_params* p = (cuLaunchKernel_params*)params;
+-            func = p->f;
+-        }
 +        cbid == API_CUDA_cuLaunchCooperativeKernel ||
 +        cbid == API_CUDA_cuLaunchCooperativeKernel_ptsz ||
 +        cbid == API_CUDA_cuLaunchCooperativeKernelMultiDevice) {
-         cuLaunchKernel_params *p = (cuLaunchKernel_params *)params;
- 
++        cuLaunchKernel_params *p = (cuLaunchKernel_params *)params;
 +
+ 
          if (!is_exit) {
 -            int nregs;
 -            CUDA_SAFECALL(
--                cuFuncGetAttribute(&nregs, CU_FUNC_ATTRIBUTE_NUM_REGS, p->f));
+-                cuFuncGetAttribute(&nregs, CU_FUNC_ATTRIBUTE_NUM_REGS, func));
 -
 -            int shmem_static_nbytes;
 -            CUDA_SAFECALL(
 -                cuFuncGetAttribute(&shmem_static_nbytes,
--                                   CU_FUNC_ATTRIBUTE_SHARED_SIZE_BYTES, p->f));
+-                                   CU_FUNC_ATTRIBUTE_SHARED_SIZE_BYTES,
+-                                   func));
 -
--            instrument_function_if_needed(ctx, p->f);
+-            instrument_function_if_needed(ctx, func);
 -
--            nvbit_enable_instrumented(ctx, p->f, true);
+-            nvbit_enable_instrumented(ctx, func, true);
 -
--            printf(
--                "Kernel %s - grid size %d,%d,%d - block size %d,%d,%d - nregs "
--                "%d - shmem %d - cuda stream id %ld\n",
--                nvbit_get_func_name(ctx, p->f), p->gridDimX, p->gridDimY,
--                p->gridDimZ, p->blockDimX, p->blockDimY, p->blockDimZ, nregs,
--                shmem_static_nbytes + p->sharedMemBytes, (uint64_t)p->hStream);
+-            if (cbid == API_CUDA_cuLaunchKernelEx_ptsz ||
+-                cbid == API_CUDA_cuLaunchKernelEx) {
+-                cuLaunchKernelEx_params* p = (cuLaunchKernelEx_params*)params;
+-                printf(
+-                    "Kernel %s - grid size %d,%d,%d - block size %d,%d,%d - nregs "
+-                    "%d - shmem %d - cuda stream id %ld\n",
+-                    nvbit_get_func_name(ctx, func),
+-                    p->config->gridDimX, p->config->gridDimY,
+-                    p->config->gridDimZ, p->config->blockDimX,
+-                    p->config->blockDimY, p->config->blockDimZ, nregs,
+-                    shmem_static_nbytes + p->config->sharedMemBytes,
+-                    (uint64_t)p->config->hStream);
+-            } else {
+-                cuLaunchKernel_params* p = (cuLaunchKernel_params*)params;
+-                printf(
+-                    "Kernel %s - grid size %d,%d,%d - block size %d,%d,%d - nregs "
+-                    "%d - shmem %d - cuda stream id %ld\n",
+-                    nvbit_get_func_name(ctx, func), p->gridDimX, p->gridDimY,
+-                    p->gridDimZ, p->blockDimX, p->blockDimY, p->blockDimZ, nregs,
+-                    shmem_static_nbytes + p->sharedMemBytes, (uint64_t)p->hStream);
+-            }
 +          /*----- Instrumentation Logic --------- */
 +            std::string kernel_name = nvbit_get_func_name(ctx, p->f);
 +            std::string short_name = cut_kernel_name(kernel_name);
@@ -370,7 +451,7 @@
          } else {
              /* make sure current kernel is completed */
              cudaDeviceSynchronize();
-@@ -224,17 +391,19 @@
+@@ -258,17 +391,19 @@
              /* wait here until the receiving thread has not finished with the
               * current kernel */
              while (recv_thread_receiving) {
@@ -391,7 +472,7 @@
          if (recv_thread_receiving &&
              (num_recv_bytes = channel_host.recv(recv_buffer, CHANNEL_SIZE)) >
                  0) {
-@@ -249,21 +418,26 @@
+@@ -283,21 +418,26 @@
                      recv_thread_receiving = false;
                      break;
                  }
@@ -433,10 +514,10 @@
                  num_processed_bytes += sizeof(reg_info_t);
              }
          }
-@@ -273,6 +447,24 @@
+@@ -307,6 +447,24 @@
  }
  
- void nvbit_at_ctx_init(CUcontext ctx) {
+ void nvbit_tool_init(CUcontext ctx) {
 +    printf("#GPU-FPX: Initializing GPU context...\n");
 +    read_from_file(enable_kernels_file,enable_kernels);
 +    read_from_file(disable_kernels_file, disable_kernels);
@@ -458,7 +539,7 @@
      recv_thread_started = true;
      channel_host.init(0, CHANNEL_SIZE, &channel_dev, NULL);
      pthread_create(&recv_thread, NULL, recv_thread_fun, NULL);
-@@ -283,4 +475,29 @@
+@@ -317,4 +475,29 @@
          recv_thread_started = false;
          pthread_join(recv_thread, NULL);
      }
